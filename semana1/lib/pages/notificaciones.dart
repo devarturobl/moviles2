@@ -1,39 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:semana1/main.dart';
 import 'package:semana1/pages/configuraciones.dart';
-import 'package:semana1/pages/notificaciones.dart';
 
-void main() {
-  runApp(const MyApp());
+class Notificaciones extends StatefulWidget {
+  const Notificaciones({super.key});
+
+  @override
+  State<Notificaciones> createState() => _NotificacionesState();
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+class _NotificacionesState extends State<Notificaciones> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Inicio',
-      home: Home(),
-    );
-  }
-}
-
-class Home extends StatefulWidget {
-  const Home({super.key});
-
-  @override
-  State<Home> createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
-  @override
-  Widget build(BuildContext context) {
-    const appTitle = 'Inicio';
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.teal,
-        title: const Text(appTitle),
+        title: const Text("Notificaciones"),
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu_open),
@@ -85,7 +67,12 @@ class _HomeState extends State<Home> {
         ListTile(
           leading: const Icon(Icons.home),
           title: const Text('Inicio'),
-          onTap: () => Navigator.pop(context),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const Home()),
+            );
+          }
         ),
         ListTile(
           leading: const Icon(Icons.settings),
@@ -100,12 +87,7 @@ class _HomeState extends State<Home> {
         ListTile(
           leading: const Icon(Icons.notifications),
           title: const Text('Notificaciones'),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const Notificaciones()),
-            );
-          },
+          onTap: () => Navigator.pop(context),
         ),
 
         // Espaciador para empujar el último item al final
@@ -131,7 +113,6 @@ class _HomeState extends State<Home> {
       body: Center(child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text("Hola"),
           const Text("Ajalpan", 
             style: TextStyle(
               color: Colors.amberAccent,
