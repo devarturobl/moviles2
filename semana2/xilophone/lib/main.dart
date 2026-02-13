@@ -11,11 +11,13 @@ class XylophoneApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: SafeArea(
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 botonS(color: Colors.red, sound: 'note1.wav'),
                 botonS(color: Colors.orange, sound: 'note2.wav'),
@@ -34,6 +36,7 @@ class XylophoneApp extends StatelessWidget {
 }
 
 
+// ignore: camel_case_types
 class botonS extends StatelessWidget {
   final Color color;
   final String sound;
@@ -41,19 +44,23 @@ class botonS extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        foregroundColor: Colors.white,
-        minimumSize: const Size(200, 60),
-        elevation: 10,
-        shadowColor: color.withOpacity(0.5),
+    return Expanded(
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero,
+          ),
+          //minimumSize: const Size(200, 60),
+          //elevation: 10,
+          shadowColor: color.withOpacity(0.5),
+        ),
+        onPressed: (){
+          final player = AudioPlayer();
+          player.play(AssetSource(sound));
+        }, child: null, 
       ),
-      onPressed: (){
-        final player = AudioPlayer();
-        player.play(AssetSource(sound));
-      }, 
-      child: Text('Click me')
     );
   }
 }
