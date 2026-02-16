@@ -8,9 +8,11 @@ class Interface extends StatefulWidget {
 }
 
 class _InterfaceState extends State<Interface> {
-  bool isMale = false;
+  bool isMale = true;
   bool isFemale = false;
-  double height = 0;
+  double height = 100;
+  int peso = 0;
+  int edad = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,14 +74,18 @@ class _InterfaceState extends State<Interface> {
               ),
               Slider(
                 value: height,
-                label: height.toInt().toString(),
                 min: 0,
                 max: 250,
-                activeColor: Colors.red,
+                label: height.toInt().toString(),
+                divisions: 250,
+                activeColor: isMale ? Colors.blue : Colors.pink,
                 inactiveColor: Colors.white,
                 onChanged: (value) {
                   setState(() {
                     height = value;
+                    if (height >= 100){
+                      peso = height.toInt() - 100;
+                    } 
                   });
                 },
               ),
@@ -90,8 +96,102 @@ class _InterfaceState extends State<Interface> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Expanded(child: MyConteiner(child: null,)),
-                Expanded(child: MyConteiner(child: null,)),
+                Expanded(child: MyConteiner(child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('WEIGHT', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(peso.toString(), style: const TextStyle(fontWeight: FontWeight.bold)),
+                        const Text('kg', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: isMale ? Colors.blue : Colors.pink,
+                          ),
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                if(peso >= 0) peso++;
+                              });
+                            },
+                            icon: const Icon(Icons.add),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: isMale ? Colors.blue : Colors.pink,
+                          ),
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                if(peso > 0) peso--;
+                              });
+                            },
+                            icon: const Icon(Icons.remove),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),)),
+                Expanded(child: MyConteiner(child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('AGE', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(edad.toString(), style: const TextStyle(fontWeight: FontWeight.bold)),
+                        const Text('years', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: isMale ? Colors.blue : Colors.pink,
+                          ),
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                if(edad >= 0) edad++;
+                              });
+                            },
+                            icon: const Icon(Icons.add),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: isMale ? Colors.blue : Colors.pink,
+                          ),
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                if(edad > 0) edad--;
+                              });
+                            },
+                            icon: const Icon(Icons.remove),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),)),
               ],
             ),
           ),
