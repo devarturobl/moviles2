@@ -8,6 +8,8 @@ class Interface extends StatefulWidget {
 }
 
 class _InterfaceState extends State<Interface> {
+  bool isMale = false;
+  bool isFemale = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,20 +24,36 @@ class _InterfaceState extends State<Interface> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Expanded(child: MyConteiner(child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.male),
-                    Text("Male")
-                  ]
-                ),)),
-                Expanded(child: MyConteiner(child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.female),
-                    Text("Female")
-                  ]
-                ),)),
+                Expanded(child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isMale = true;
+                      isFemale = false;
+                    });
+                  },
+                  child: MyConteiner(child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.male, size: 80, color: isMale ? Colors.blue : Colors.white),
+                      Text("Male", style: TextStyle(fontWeight: FontWeight.bold),)
+                    ]
+                  ),),
+                )),
+                Expanded(child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isMale = false;
+                      isFemale = true;
+                    });
+                  },
+                  child: MyConteiner(child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.female, size: 80, color: isFemale ? Colors.pink : Colors.white,),
+                      Text("Female", style: TextStyle(fontWeight: FontWeight.bold))
+                    ]
+                  ),),
+                )),
               ],
             ),
           ),
@@ -66,7 +84,7 @@ class MyConteiner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-                margin: const EdgeInsets.all(20),
+                margin: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: const Color.fromARGB(255, 47, 42, 42),
