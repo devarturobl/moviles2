@@ -10,6 +10,7 @@ class Interface extends StatefulWidget {
 class _InterfaceState extends State<Interface> {
   bool isMale = false;
   bool isFemale = false;
+  double height = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,7 +59,32 @@ class _InterfaceState extends State<Interface> {
             ),
           ),
           //Area2
-          Expanded(child: MyConteiner(child: null,)),
+          Expanded(child: MyConteiner(child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('HEIGHT', style: const TextStyle(fontWeight: FontWeight.bold)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(height.toInt().toString(), style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+                  const Text('cm', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold))
+                ],
+              ),
+              Slider(
+                value: height,
+                label: height.toInt().toString(),
+                min: 0,
+                max: 250,
+                activeColor: Colors.red,
+                inactiveColor: Colors.white,
+                onChanged: (value) {
+                  setState(() {
+                    height = value;
+                  });
+                },
+              ),
+            ],
+          ),)),
           //Area3
           Expanded(
             child: Row(
