@@ -22,39 +22,47 @@ class _InterfaceState extends State<Interface> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Expanded(child: MyConteiner()),
-                Expanded(child: MyConteiner()),
+                Expanded(child: MyConteiner(child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.male),
+                    Text("Male")
+                  ]
+                ),)),
+                Expanded(child: MyConteiner(child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.female),
+                    Text("Female")
+                  ]
+                ),)),
               ],
             ),
           ),
           //Area2
-          Expanded(child: MyConteiner()),
+          Expanded(child: MyConteiner(child: null,)),
           //Area3
           Expanded(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Expanded(child: MyConteiner()),
-                Expanded(child: MyConteiner()),
+                Expanded(child: MyConteiner(child: null,)),
+                Expanded(child: MyConteiner(child: null,)),
               ],
             ),
           ),
           //Area4
-          Expanded(child: MyConteiner())
+          Expanded(child: MyConteiner(child: null,))
         ],
       ),
     );
   }
 }
 
-class MyConteiner extends StatefulWidget {
-  const MyConteiner({super.key});
+class MyConteiner extends StatelessWidget {
+  final Widget? child;
+  const MyConteiner({required this.child, super.key});
 
-  @override
-  State<MyConteiner> createState() => _MyConteinerState();
-}
-
-class _MyConteinerState extends State<MyConteiner> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -63,6 +71,7 @@ class _MyConteinerState extends State<MyConteiner> {
                   borderRadius: BorderRadius.circular(10),
                   color: const Color.fromARGB(255, 47, 42, 42),
                 ),
+                child: child == null ? null : Center(child: child!),
               );
   }
 }
