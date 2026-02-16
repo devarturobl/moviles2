@@ -196,7 +196,7 @@ class _InterfaceState extends State<Interface> {
             ),
           ),
           //Area4
-          Expanded(child: MyConteiner(child: null,))
+          Expanded(child: MyConteiner(child: Text("Boton"),))
         ],
       ),
     );
