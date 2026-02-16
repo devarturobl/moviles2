@@ -15,18 +15,32 @@ class _InterfaceState extends State<Interface> {
         title: const Text('BMI Calculator'),
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           //Area1
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(child: MyConteiner()),
-              Expanded(child: MyConteiner()),
-            ],
-          )
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(child: MyConteiner()),
+                Expanded(child: MyConteiner()),
+              ],
+            ),
+          ),
           //Area2
+          Expanded(child: MyConteiner()),
           //Area3
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(child: MyConteiner()),
+                Expanded(child: MyConteiner()),
+              ],
+            ),
+          ),
           //Area4
+          Expanded(child: MyConteiner())
         ],
       ),
     );
@@ -47,10 +61,8 @@ class _MyConteinerState extends State<MyConteiner> {
                 margin: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: const Color.fromARGB(255, 46, 45, 45),
+                  color: const Color.fromARGB(255, 47, 42, 42),
                 ),
-                height: 100,
-                width: 100,
               );
   }
 }
