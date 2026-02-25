@@ -1,3 +1,4 @@
+import 'package:bmicalculator/result.dart';
 import 'package:flutter/material.dart';
 
 class Interface extends StatefulWidget {
@@ -196,7 +197,29 @@ class _InterfaceState extends State<Interface> {
             ),
           ),
           //Area4
-          Expanded(child: MyConteiner(child: Text("Boton"),))
+          Expanded(child: MyConteiner(
+            child: TextButton(
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const Result()));
+            },
+              style: TextButton.styleFrom(
+              backgroundColor: Colors.red,        // Fondo rojo
+              foregroundColor: Colors.white,      // Color del texto
+              padding: const EdgeInsets.only(left: 100, right: 100, top: 30, bottom: 30),  // Padding interno
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,  // Hace el botón cuadrado (sin bordes redondeados)
+              ),
+            ),
+            child: const Text(
+              'CALCULATE',
+                style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                ),
+              ),
+            )
+            )
+          )
         ],
       ),
     );
