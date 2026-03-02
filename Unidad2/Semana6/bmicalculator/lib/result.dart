@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:bmicalculator/interface.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +12,61 @@ class Result extends StatefulWidget {
 }
 
 class _ResultState extends State<Result> {
+
+  // descriptions map for each BMI category
+  static const Map<String, List<String>> descripcionesIMC = {
+    "bajo_peso": [
+      "Presenta un peso corporal por debajo del rango recomendado.",
+      "Su índice de masa corporal se encuentra por debajo del nivel saludable.",
+      "Tiene una masa corporal inferior a la esperada para su estatura.",
+      "Se observa un peso menor al estándar recomendado.",
+      "Su evaluación indica insuficiencia de peso corporal.",
+      "Registra un peso por debajo del promedio saludable.",
+      "Presenta delgadez por debajo del rango normal.",
+      "Su composición corporal indica bajo peso.",
+      "Tiene un peso inferior al ideal para su estatura.",
+      "Se encuentra por debajo del rango adecuado de masa corporal."
+    ],
+
+    "normal": [
+      "Su peso se encuentra dentro del rango saludable.",
+      "Presenta un índice de masa corporal adecuado.",
+      "Tiene un peso acorde a su estatura.",
+      "Se mantiene dentro de los parámetros saludables.",
+      "Su composición corporal es considerada normal.",
+      "Registra un peso equilibrado.",
+      "Presenta un estado corporal saludable.",
+      "Su evaluación indica peso adecuado.",
+      "Se encuentra dentro del rango ideal.",
+      "Mantiene una proporción saludable entre peso y estatura."
+    ],
+
+    "sobrepeso": [
+      "Presenta un peso corporal por encima del rango recomendado.",
+      "Tiene un índice de masa corporal superior a los valores saludables.",
+      "Muestra acumulación de grasa corporal mayor a la recomendada.",
+      "Su peso excede el promedio esperado para su estatura.",
+      "Se encuentra por encima del rango saludable.",
+      "Presenta exceso de peso corporal.",
+      "Tiene masa corporal elevada.",
+      "Su composición corporal indica sobrepeso.",
+      "Registra un peso mayor al sugerido médicamente.",
+      "Presenta un desequilibrio entre estatura y peso."
+    ],
+
+    "obesidad": [
+      "Presenta un nivel de obesidad según su índice de masa corporal.",
+      "Su evaluación indica obesidad.",
+      "Tiene un exceso significativo de masa corporal.",
+      "Registra un IMC en rango de obesidad.",
+      "Presenta acumulación elevada de grasa corporal.",
+      "Se encuentra en un rango que requiere atención médica.",
+      "Su peso supera considerablemente el rango saludable.",
+      "Presenta obesidad según criterios clínicos.",
+      "Tiene una masa corporal muy superior al ideal.",
+      "Su condición corresponde a obesidad."
+    ],
+  };
 
   Color _colorForCategory(String category) {
     switch (category.toLowerCase()) {
@@ -28,18 +84,12 @@ class _ResultState extends State<Result> {
   }
 
   String _descriptionForCategory(String category) {
-    switch (category.toLowerCase()) {
-      case 'bajo peso':
-        return 'Tu IMC indica bajo peso. Considera una dieta nutritiva y consulta con un profesional de la salud.';
-      case 'normal':
-        return 'Tu peso corporal es normal. ¡Sigue con el buen trabajo!';
-      case 'sobrepeso':
-        return 'Tienes un peso corporal superior al normal. Intenta hacer más ejercicio y llevar una dieta equilibrada.';
-      case 'obesidad':
-        return 'Tu IMC se encuentra en el rango de obesidad. Se recomienda consultar a un médico y revisar tu estilo de vida.';
-      default:
-        return '';
-    }
+    // normalize and convert to map key style (underscores, lower)
+    String key = category.toLowerCase().replaceAll(' ', '_');
+    List<String>? options = descripcionesIMC[key];
+    if (options == null || options.isEmpty) return '';
+    final rnd = Random();
+    return options[rnd.nextInt(options.length)];
   }
 
   @override
