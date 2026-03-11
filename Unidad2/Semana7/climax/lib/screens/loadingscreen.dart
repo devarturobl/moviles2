@@ -56,6 +56,13 @@ class _LoadingscreenState extends State<Loadingscreen> {
     return true;
   }
 
+  @override
+  void initState() {
+    super.initState();
+    getLocation();
+  }
+
+
   Future<void> getLocation() async {
   debugPrint('getLocation iniciado');
 
@@ -88,14 +95,14 @@ class _LoadingscreenState extends State<Loadingscreen> {
         content: Text('Location: ${position.latitude}, ${position.longitude}'),
       ),
     );
-  } catch (e) {
-    debugPrint('Error: $e');
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error: $e')),
-    );
+    } catch (e) {
+      debugPrint('Error: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
