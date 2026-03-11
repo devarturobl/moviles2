@@ -76,7 +76,7 @@ class _LoadingscreenState extends State<Loadingscreen> {
   try {
     final position = await Geolocator.getCurrentPosition(
       locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.low,
+        accuracy: LocationAccuracy.best,
         timeLimit: Duration(seconds: 10), // ✅ Timeout añadido
       ),
     ).timeout(
@@ -110,7 +110,11 @@ class _LoadingscreenState extends State<Loadingscreen> {
       body: Center(
         child: ElevatedButton(
           onPressed: getLocation, // ✅ Simplificado, ya muestra snackbar dentro de getLocation
-          child: const Text('Get Location'),
+          child: Column(
+            children: [
+              Text('Get Location #'),
+            ],
+          ),
         ),
       ),
     );
