@@ -12,6 +12,7 @@ class _LoadingscreenState extends State<Loadingscreen> {
   Future<bool> _ensureLocationPermission() async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
+      if (!mounted) return false;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -28,6 +29,7 @@ class _LoadingscreenState extends State<Loadingscreen> {
     }
 
     if (permission == LocationPermission.denied) {
+      if (!mounted) return false;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -39,6 +41,7 @@ class _LoadingscreenState extends State<Loadingscreen> {
     }
 
     if (permission == LocationPermission.deniedForever) {
+      if (!mounted) return false;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -54,33 +57,52 @@ class _LoadingscreenState extends State<Loadingscreen> {
   }
 
   Future<void> getLocation() async {
-    if (!await _ensureLocationPermission()) return;
+  debugPrint('getLocation iniciado');
 
-    try {
-      final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.low,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Location: ${position.latitude}, ${position.longitude}',
-          ),
-        ),
-      );
-      print(position);
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to get location: $e')));
-    }
+  if (!await _ensureLocationPermission()) {
+    debugPrint('Permiso denegado');
+    return;
   }
+
+  debugPrint('Permiso concedido, obteniendo posición...');
+
+  try {
+    final position = await Geolocator.getCurrentPosition(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.low,
+        timeLimit: Duration(seconds: 10), // ✅ Timeout añadido
+      ),
+    ).timeout(
+      const Duration(seconds: 15), // ✅ Timeout de respaldo
+      onTimeout: () {
+        throw Exception('Tiempo de espera agotado al obtener ubicación');
+      },
+    );
+
+    debugPrint('Posición: ${position.latitude}, ${position.longitude}');
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Location: ${position.latitude}, ${position.longitude}'),
+      ),
+    );
+  } catch (e) {
+    debugPrint('Error: $e');
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error: $e')),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: ElevatedButton(
-          onPressed: getLocation,
+          onPressed: getLocation, // ✅ Simplificado, ya muestra snackbar dentro de getLocation
           child: const Text('Get Location'),
         ),
       ),
