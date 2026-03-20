@@ -20,7 +20,8 @@ class _LoadingscreenState extends State<Loadingscreen> {
   String categoria = "";
   String descripcion = "";
   String icono = "";
-
+  double longitude = 0.0;
+  double latitude = 0.0;
 
   IconData iconoNubosidad(int clouds) {
     if (clouds < 10) return Icons.wb_sunny;
@@ -38,9 +39,8 @@ class _LoadingscreenState extends State<Loadingscreen> {
   }
 
   String traducirClima(String desc) {
-
-  Map<String,String> mapa = {
-        // Categorías
+    Map<String, String> mapa = {
+      // Categorías
       "Clear": "Despejado",
       "Clouds": "Nublado",
       "Rain": "Lluvia",
@@ -67,7 +67,6 @@ class _LoadingscreenState extends State<Loadingscreen> {
     return mapa[desc] ?? desc;
   }
 
-
   Future<bool> _ensureLocationPermission() async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
@@ -75,7 +74,7 @@ class _LoadingscreenState extends State<Loadingscreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Los servicios de ubicación están desactivados. Actívalos en la configuración.',
+            'Los servicios de ubicación fueron desactivados. Actívalos en la configuración.',
           ),
         ),
       );
@@ -104,7 +103,7 @@ class _LoadingscreenState extends State<Loadingscreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            ' ',
+            'Se Prohibio el uso de la geolocalizacion, valla a ajustes y conceda el permiso',
           ),
         ),
       );
@@ -121,74 +120,130 @@ class _LoadingscreenState extends State<Loadingscreen> {
     getLocation();
   }
 
+  void getData(double lat, double lon) async {
+    final uri = Uri.https('api.openweathermap.org', '/data/3.0/onecall', {
+      'lat': lat.toString(),
+      'lon': lon.toString(),
+      'exclude': 'hourly,daily',
+      'units': 'metric',
+      'lang': 'es',
+      'appid': '2d6f1db34d02373c1ce9c7e5a07ffcc0',
+    });
 
-  void getData() async{
-    Response response = await get(Uri.parse('https://api.openweathermap.org/data/3.0/onecall?lat=18.37326&lon=-97.23484&exclude=hourly,daily&appid=2d6f1db34d02373c1ce9c7e5a07ffcc0'));
-    if (response.statusCode == 200) {
-      debugPrint('Data received: ${response.body}');
+    debugPrint('Llamando a API: $uri');
+
+    try {
+      Response response = await get(uri);
+      if (response.statusCode != 200) {
+        debugPrint(
+          'Error HTTP: ${response.statusCode}, body: ${response.body}',
+        );
+        return;
+      }
+
+      final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+      final current = decoded['current'] as Map<String, dynamic>?;
+      if (current == null) {
+        debugPrint('No hay clave current en la respuesta');
+        return;
+      }
+
       setState(() {
         apiData = response.body;
-      });
+        longitude = (decoded['lon'] as num?)?.toDouble() ?? 0.0;
+        latitude = (decoded['lat'] as num?)?.toDouble() ?? 0.0;
 
-      var longitude = jsonDecode(apiData)['lon'];
-      var latitude = jsonDecode(apiData)['lat'];
-      
-      temperature = jsonDecode(apiData)["current"]["temp"];
-      temperature = temperature - 273.15; // Convertir de Kelvin a Celsius
-      humidity = jsonDecode(apiData)["current"]["humidity"];
-      indiceUV = jsonDecode(apiData)["current"]["uvi"]; 
-      nubosidad = jsonDecode(apiData)["current"]["clouds"];
-      categoria = jsonDecode(apiData)["current"]["weather"][0]["main"]; 
-      descripcion = jsonDecode(apiData)["current"]["weather"][0]["description"];
-      icono = jsonDecode(apiData)["current"]["weather"][0]["icon"];
-    } else {
-      debugPrint('Failed to load data: ${response.statusCode}');
+        temperature = ((current['temp'] as num?)?.toDouble() ?? 0.0);
+        humidity = (current['humidity'] as num?)?.toInt() ?? 0;
+        indiceUV = (current['uvi'] as num?)?.toDouble() ?? 0.0;
+        nubosidad = (current['clouds'] as num?)?.toInt() ?? 0;
+
+        final weather =
+            (current['weather'] as List<dynamic>?)?.firstWhere(
+                  (item) => item is Map<String, dynamic>,
+                  orElse: () => null,
+                )
+                as Map<String, dynamic>?;
+
+        categoria = weather?['main']?.toString() ?? 'Desconocido';
+        descripcion = weather?['description']?.toString() ?? 'sin descripción';
+        icono = weather?['icon']?.toString() ?? '01d';
+      });
+    } catch (e, st) {
+      debugPrint('getData exception: $e\n$st');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al obtener datos del clima: $e')),
+      );
     }
   }
 
   Future<void> getLocation() async {
-  debugPrint('getLocation iniciado');
+    debugPrint('getLocation iniciado');
 
-  if (!await _ensureLocationPermission()) {
-    debugPrint('Permiso denegado');
-    return;
-  }
+    if (!await _ensureLocationPermission()) {
+      debugPrint('Permiso denegado');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Permiso de ubicación denegado.')),
+      );
+      return;
+    }
 
-  debugPrint('Permiso concedido, obteniendo posición...');
+    debugPrint('Permiso concedido, obteniendo posición...');
+    Position? position;
 
-  try {
-    final position = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.best,
-        timeLimit: Duration(seconds: 10), // ✅ Timeout añadido
-      ),
-    ).timeout(
-      const Duration(seconds: 15), // ✅ Timeout de respaldo
-      onTimeout: () {
-        throw Exception('Tiempo de espera agotado al obtener ubicación');
-      },
+    try {
+      position =
+          await Geolocator.getCurrentPosition(
+            locationSettings: const LocationSettings(
+              accuracy: LocationAccuracy.best,
+              timeLimit: Duration(seconds: 10),
+            ),
+          ).timeout(
+            const Duration(seconds: 15),
+            onTimeout: () {
+              debugPrint('Tiempo de espera agotado para getCurrentPosition');
+              return Future.error(
+                Exception('Tiempo de espera agotado al obtener ubicación'),
+              );
+            },
+          );
+    } catch (e) {
+      debugPrint('No se obtuvo getCurrentPosition: $e');
+    }
+
+    if (position == null) {
+      debugPrint('Intentando getLastKnownPosition como fallback...');
+      try {
+        position = await Geolocator.getLastKnownPosition();
+      } catch (e) {
+        debugPrint('Error getLastKnownPosition: $e');
+      }
+    }
+
+    if (position == null) {
+      debugPrint('No se pudo obtener posición. Verifica permiso/servicio.');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se pudo obtener ubicación.')),
+      );
+      return;
+    }
+
+    debugPrint(
+      'Posición obtenida: ${position.latitude}, ${position.longitude}',
     );
-
-    debugPrint('Posición: ${position.latitude}, ${position.longitude}');
-
     if (!mounted) return;
-
-    getData();
+    getData(position.latitude, position.longitude);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Location: ${position.latitude}, ${position.longitude}'),
       ),
     );
-    } catch (e) {
-      debugPrint('Error: $e');
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
-    }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -220,15 +275,14 @@ class _LoadingscreenState extends State<Loadingscreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-              Icon(iconoNubosidad(nubosidad), color: Colors.grey),
-              SizedBox(width: 8),
-              Text("Nubosidad: $nubosidad%"),
+                Icon(iconoNubosidad(nubosidad), color: Colors.grey),
+                SizedBox(width: 8),
+                Text("Nubosidad: $nubosidad%"),
               ],
-            ), 
+            ),
             Text("Categoría: ${traducirClima(categoria)}"),
             Text("Descripción: ${traducirClima(descripcion)}"),
-            Image.network("https://openweathermap.org/img/wn/$icono@2x.png",
-            ),
+            Image.network("https://openweathermap.org/img/wn/$icono@2x.png"),
           ],
         ),
       ),
