@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:itssnamessenger/config/supabase_config.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Supabase.initialize(
-    url: 'https://jjrhopqrdhcckkphmpni.supabase.co',
-    anonKey: 'sb_publishable_TJGLuZQhKubX5BV_pY_LAg_Sddv4Sok',
+    url: SupabaseConfig.supabaseUrl,
+    anonKey: SupabaseConfig.supabaseAnonKey,
   );
   runApp(MyApp());
 }
@@ -18,11 +19,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: Container(),
     );
   }
 }
