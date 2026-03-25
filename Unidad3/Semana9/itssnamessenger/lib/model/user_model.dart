@@ -28,4 +28,38 @@ class UserModel {
       updatedAt: DateTime.parse(json['updated_at'] as String),
     );
   }
+
+  UserModel copyWith({
+    String? id,
+    String? username,
+    String? fullName,
+    String? avatarUrl,
+    String? bio,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return UserModel(
+      id: id ?? this.id, 
+      username: username ?? this.username,
+      fullName: fullName ?? this.fullName,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      bio: bio ?? this.bio, 
+      createdAt: createdAt ?? this.createdAt, 
+      updatedAt: updatedAt ?? this.updatedAt
+      );
+  }
+
+  @override
+  String toString(){
+    return 'UserModel(id: $id, username: $username, fullName: $fullName)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if(identical(this, other)) return true;
+    return other is UserModel && other.id == id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
 }
