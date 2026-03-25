@@ -29,6 +29,18 @@ class UserModel {
     );
   }
 
+  Map<String, dynamic> toJson(){
+    return{
+      'id': id,
+      'username': username,
+      'full_name': fullName,
+      'avatar_url': avatarUrl,
+      'bio': bio,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String()
+    };
+  }
+
   UserModel copyWith({
     String? id,
     String? username,
